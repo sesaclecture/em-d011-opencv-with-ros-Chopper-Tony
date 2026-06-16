@@ -1,0 +1,80 @@
+name: Autograding Tests
+
+on:
+  push:
+  repository_dispatch:
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: test_make_filter_config
+        id: test-make-filter-config
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_make_filter_config
+          setup-command: pip install pytest numpy opencv-python
+          command: python -m pytest tests/test_main.py::test_make_filter_config
+          timeout: 10
+          max-score: 2
+
+      - name: test_load_filter_config
+        id: test-load-filter-config
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_load_filter_config
+          setup-command: pip install pytest numpy opencv-python
+          command: python -m pytest tests/test_main.py::test_load_filter_config
+          timeout: 10
+          max-score: 2
+
+      - name: test_find_bounding_box
+        id: test-find-bounding-box
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_find_bounding_box
+          setup-command: pip install pytest numpy opencv-python
+          command: python -m pytest tests/test_main.py::test_find_bounding_box
+          timeout: 10
+          max-score: 2
+
+      - name: test_decide_tracking_command
+        id: test-decide-tracking-command
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_decide_tracking_command
+          setup-command: pip install pytest numpy opencv-python
+          command: python -m pytest tests/test_main.py::test_decide_tracking_command
+          timeout: 10
+          max-score: 2
+
+      - name: test_command_to_twist
+        id: test-command-to-twist
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_command_to_twist
+          setup-command: pip install pytest numpy opencv-python
+          command: python -m pytest tests/test_main.py::test_command_to_twist
+          timeout: 10
+          max-score: 2
+
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          TEST-MAKE-FILTER-CONFIG_RESULTS: "${{ steps.test-make-filter-config.outputs.result }}"
+          TEST-LOAD-FILTER-CONFIG_RESULTS: "${{ steps.test-load-filter-config.outputs.result }}"
+          TEST-FIND-BOUNDING-BOX_RESULTS: "${{ steps.test-find-bounding-box.outputs.result }}"
+          TEST-DECIDE-TRACKING-COMMAND_RESULTS: "${{ steps.test-decide-tracking-command.outputs.result }}"
+          TEST-COMMAND-TO-TWIST_RESULTS: "${{ steps.test-command-to-twist.outputs.result }}"
+        with:
+          runners: test-make-filter-config,test-load-filter-config,test-find-bounding-box,test-decide-tracking-command,test-command-to-twist
